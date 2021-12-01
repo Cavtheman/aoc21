@@ -49,11 +49,14 @@ for line in filename |> File.ReadLines |> Seq.map int do
     prev <- newWindow
 printfn "Result: %i" count
 
+
+
 let sweepFilter (window : array<int>) : bool =
     let len = Array.length window
     //Array.sum window.[..len-2] < Array.sum window.[1..len-1]
     Array.head window < Array.last window
 
+// Very clever solution I just had to try, based on code by Ken Friis Larsen
 let sonarSweepSeq (filename : string) (windowLength : int) : int =
     filename
     |> File.ReadLines
