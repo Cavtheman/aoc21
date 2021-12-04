@@ -1,9 +1,9 @@
 open System.IO
 
 let rec transposeLstLst (llst : 'a list list) : 'a list list =
-    match llst with
     // First case matches on a list containing at least one list,
     // which itself contains at least one element
+    match llst with
     | (_::_)::_ -> List.map List.head llst :: transposeLstLst (List.map List.tail llst)
     | _ -> []
 
