@@ -1,26 +1,11 @@
 open System.IO
 
-// Helper functions lifted straight from PoP
-// Lists are probably a horrible way of handling this
-let notEmpty (llst : 'a list list) = not (List.isEmpty llst) && List.forall (fun (lst : 'a list) -> not lst.IsEmpty) llst
-
-let firstColumn (llst: 'a list list) : 'a list =
-    if notEmpty llst then
-        List.map List.head llst
-    else
-        []
-
-let dropFirstColumn (llst : 'a list list) : 'a list list =
-    if notEmpty llst && llst.Length > 1 && (llst.Item 0).Length > 1 then
-        List.map List.tail llst
-    else
-        []
-
 let rec transposeLstLst (llst : 'a list list) : 'a list list =
     match llst with
-    | []   -> []
-    | llst -> (firstColumn llst) :: (transposeLstLst (dropFirstColumn llst))
-
+    // First case matches on a list containing at least one list,
+    // which itself contains at least one element
+    | (_::_)::_ -> List.map List.head llst :: transposeLstLst (List.map List.tail llst)
+    | _ -> []
 
 let fromBin lst =
     let len = (List.length lst) - 1
