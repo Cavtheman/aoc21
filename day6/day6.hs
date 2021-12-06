@@ -54,3 +54,10 @@ numFish filename days = do
   firstFish <- readFish filename
   let lastFish = nDays firstFish days
   return $ fst $ Map.mapAccum (\acc x -> (acc+x, x)) 0 lastFish
+
+main :: IO ()
+main = do
+  part1 <- numFish "input.txt" 80
+  part2 <- numFish "input.txt" 256
+  print part1
+  print part2
