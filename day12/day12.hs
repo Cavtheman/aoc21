@@ -35,10 +35,40 @@ traverseCaves caveMap traversed start end =
   in [path | option <- newCaveMap ! start
            , path <- traverseCaves newCaveMap (start:traversed) option end]
 
+data Restricted a = Once a | Twice a
+  deriving (Show, Eq)
+
+goTo :: Cave -> Restricted [Cave] -> Restricted [Cave]
+goTo cave (Once traversed) | isBigCave cave = Once $ cave:traversed
+goTo cave (Twice traversed) | isBigCave cave = Twice $ cave:traversed
+
+goTo cave (Once traversed) = if cave `elem` traversed
+                             then Twice $ cave:traversed
+                             else Once $ cave:traversed
+goTo cave (Twice traversed) = if cave `elem` traversed
+                              then Twice traversed
+                              else Twice $ cave:traversed
+
+validCave :: Cave -> Restricted [Cave] -> Bool
+validCave cave _traversed | isBigCave cave = True
+validCave "start" _traversed = False
+validCave _cave (Once _traversed) = True
+validCave cave (Twice traversed) = cave `notElem` traversed
+
+traverseCavesNTimes :: CaveMap -> Restricted [Cave] -> Cave -> Cave -> [Restricted [Cave]]
+traverseCavesNTimes _caveMap traversed start end | start == end = [goTo start traversed]
+traverseCavesNTimes caveMap traversed start end =
+  let newTraversed = goTo start traversed
+  in [path | option <- caveMap ! start, validCave option newTraversed
+           , path <- traverseCavesNTimes caveMap newTraversed option end]
+
 main :: IO ()
 main = do
-  result <- readCaves "input.txt"
-  let caveMap = genMap result
+  input <- readCaves "input.txt"
+  let caveMap = genMap input
       traversals = traverseCaves caveMap [] "start" "end"
+      nTraversals = traverseCavesNTimes caveMap (Once []) "start" "end"
   --print traversals
   print $ length traversals
+  --print nTraversals
+  print $ length nTraversals
